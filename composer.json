@@ -1,0 +1,21 @@
+{
+    "name": "timberhub/forge-deployments",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "dimpagk",
+            "email": "dimitris@timberhub.com"
+        }
+    ],
+    "require": {
+        "symfony/console": "7.0.x-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Timberhub\\Commands\\BranchDeployCommand\\": "src/"
+        }
+    }
+}
+
