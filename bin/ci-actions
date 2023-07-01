@@ -3,9 +3,9 @@
 
 require_once 'vendor/autoload.php';
 
-use Timberhub\Commands\BranchDeployCommand;
+use Timberhub\Commands\BranchDeployForgeCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
-$application->add(new BranchDeployCommand());
+$application->add(new BranchDeployForgeCommand());
 $application->run();

@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Timberhub\\Commands\\BranchDeployCommand\\": "src/"
+            "Timberhub\\": "src/"
         }
     }
 }
