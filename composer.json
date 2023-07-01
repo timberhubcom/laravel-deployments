@@ -4,6 +4,10 @@
     "type": "library",
     "license": "MIT",
     "minimum-stability": "dev",
+    "support": {
+        "issues": "https://github.com/timberhubcom/laravel-deployments/issues",
+        "source": "https://github.com/timberhubcom/laravel-deployments"
+    },
     "authors": [
         {
             "name": "dimpagk",
@@ -11,7 +15,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": "^8.0.0",
         "symfony/console": "^6.0.9",
         "laravel/forge-sdk": "^3.13.5"
     },
