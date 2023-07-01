@@ -19,5 +19,6 @@
         "psr-4": {
             "Timberhub\\": "src/"
         }
-    }
+    },
+    "bin": ["bin/ci-actions"]
 }
