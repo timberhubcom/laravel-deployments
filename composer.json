@@ -1,0 +1,21 @@
+{
+    "name": "timberhub/forge-deployments",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "dimpagk",
+            "email": "dimitris@timberhub.com"
+        }
+    ],
+    "require": {
+        "symfony/console": "7.0.x-dev",
+        "laravel/forge-sdk": "3.13.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Timberhub\\": "src/"
+        }
+    }
+}
