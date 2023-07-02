@@ -26,14 +26,14 @@ class BranchDeployForgeCommand extends Command {
 
     protected function configure() {
         $this->setDescription('Deploy a branch to the staging server')
-            ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'The Forge API token.')
-            ->addOption('server', 's', InputOption::VALUE_REQUIRED, 'The ID of the target server.')
+            ->addOption('token', 't', InputOption::VALUE_OPTIONAL, 'The Forge API token.')
+            ->addOption('server', 's', InputOption::VALUE_OPTIONAL, 'The ID of the target server.')
             ->addOption('repository', 'r', InputOption::VALUE_REQUIRED, 'The name of the repository being deployed.')
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
-            ->addOption('domain', 'd', InputOption::VALUE_REQUIRED, 'The domain you\'d like to use for deployments.')
+            ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
-            ->addOption('db-user', 'db-u', InputOption::VALUE_REQUIRED, 'The db username.')
-            ->addOption('db-password', 'db-p', InputOption::VALUE_REQUIRED, 'The db password.')
+            ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
+            ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
             ->addOption('php-version', 'php', InputOption::VALUE_OPTIONAL, 'The version of PHP the site should use, e.g. php81, php80, ...', 'php81')
             ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'A command you would like to execute on the site, e.g. php artisan db:seed.')
             ->addOption('edit-env', 'env', InputOption::VALUE_OPTIONAL, 'The colon-separated name and value that will be added/updated in the site\'s environment, e.g. "MY_API_KEY:my_api_key_value".') // TODO: Add default .env file config
