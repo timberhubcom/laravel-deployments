@@ -4,11 +4,11 @@ namespace Timberhub\Traits;
 
 trait BranchDeployForgeInputs {
     protected function getToken(): string {
-        return $this->input->getOption('token');
+        return getenv('FORGE_API_TOKEN') ?? $this->input->getOption('token');
     }
 
     protected function getServer(): string {
-        return $this->input->getOption('server');
+        return getenv('FORGE_SERVER_ID') ?? $this->input->getOption('server');
     }
 
     protected function getRepository(): string {
@@ -25,7 +25,7 @@ trait BranchDeployForgeInputs {
     }
 
     protected function getDomain(): string {
-        return $this->input->getOption('domain');
+        return getenv('DEPLOYMENT_DOMAIN') ?? $this->input->getOption('domain');
     }
 
     protected function getPhpVersion(): string {
@@ -45,11 +45,11 @@ trait BranchDeployForgeInputs {
     }
 
     protected function getDatabaseUser(): string {
-        return $this->input->getOption('db-user');
+        return getenv('DB_USER') ?? $this->input->getOption('db-user');
     }
 
     protected function getDatabasePassword(): string {
-        return $this->input->getOption('db-password');
+        return getenv('DB_USER_PASSWORD') ?? $this->input->getOption('db-password');
     }
 
     protected function getCommands() {
