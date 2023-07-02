@@ -53,7 +53,7 @@ trait BranchDeployForgeInputs {
     }
 
     protected function getCommands() {
-        return $this->input->getOption('commands');
+        return explode(',', $this->input->getOption('commands'));
     }
 
     protected function getEnvVariables() {

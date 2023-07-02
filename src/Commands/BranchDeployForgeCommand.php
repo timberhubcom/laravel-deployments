@@ -35,7 +35,7 @@ class BranchDeployForgeCommand extends Command {
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
             ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
             ->addOption('php-version', 'php', InputOption::VALUE_OPTIONAL, 'The version of PHP the site should use, e.g. php81, php80, ...', 'php81')
-            ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'A command you would like to execute on the site, e.g. php artisan db:seed.')
+            ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'Comma seperated commands you would like to execute on the site, e.g. php artisan db:seed,php artisan migrate.')
             ->addOption('edit-env', 'env', InputOption::VALUE_OPTIONAL, 'The colon-separated name and value that will be added/updated in the site\'s environment, e.g. "MY_API_KEY:my_api_key_value".') // TODO: Add default .env file config
             ->addOption('isolate', 'iso', InputOption::VALUE_OPTIONAL, 'Enable site isolation.')
             ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', false);
