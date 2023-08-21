@@ -36,6 +36,14 @@ trait BranchDeployForgeInputs {
         return $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
     }
 
+    protected function generateOpsDomain(): string {
+        return 'ops' . $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
+    }
+
+    protected function generateBPDomain(): string {
+        return 'app' . $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
+    }
+
     protected function getQuickDeploy(): bool {
         return $this->input->getOption('quick-deploy');
     }
