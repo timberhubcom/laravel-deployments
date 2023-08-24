@@ -83,7 +83,7 @@ class BranchDeployVercelCommand extends Command {
 
         if ($project['httpCode'] !== 200) {
             $this->output("Failed to add domain to project.");
-            $this->output(json_decode($project['response']));
+            $this->output($project['response']);
             return;
         }
 
@@ -95,7 +95,7 @@ class BranchDeployVercelCommand extends Command {
             'key' => 'NEXT_PUBLIC_BACKEND_URL',
             'value' => $this->generateOpsDomain(),
             'type' => 'plain',
-            'target' => 'preview',
+            'target' => ['preview'],
             'gitBranch' => $this->getFrontendBranch(),
         ];
 
@@ -107,7 +107,7 @@ class BranchDeployVercelCommand extends Command {
 
         if ($project['httpCode'] !== 200) {
             $this->output("Failed to add backend URL to project.");
-            $this->output(json_decode($project['response']));
+            $this->output($project['response']);
             return;
         }
 
