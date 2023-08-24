@@ -3,6 +3,8 @@
 namespace Timberhub\Traits;
 
 trait BranchDeployForgeInputs {
+    use GeneralInfoInputs;
+
     protected function getToken(): string {
         return getenv('FORGE_API_TOKEN') ?? $this->input->getOption('token');
     }
@@ -11,37 +13,8 @@ trait BranchDeployForgeInputs {
         return getenv('FORGE_SERVER_ID') ?? $this->input->getOption('server');
     }
 
-    protected function getRepository(): string {
-        return $this->input->getOption('repository');
-    }
-
-    protected function getRepositoryDirectory():string {
-        $fullPath = explode('/', $this->getRepository());
-        return end($fullPath);
-    }
-
-    protected function getBranch(): string {
-        return $this->input->getOption('branch');
-    }
-
-    protected function getDomain(): string {
-        return getenv('DEPLOYMENT_DOMAIN') ?? $this->input->getOption('domain');
-    }
-
     protected function getPhpVersion(): string {
         return $this->input->getOption('php-version');
-    }
-
-    protected function generateSiteDomain(): string {
-        return $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
-    }
-
-    protected function generateOpsDomain(): string {
-        return 'ops' . $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
-    }
-
-    protected function generateBPDomain(): string {
-        return 'app' . $this->getBranch() . '.' . $this->getRepositoryDirectory() . '.' . $this->getDomain();
     }
 
     protected function getQuickDeploy(): bool {
