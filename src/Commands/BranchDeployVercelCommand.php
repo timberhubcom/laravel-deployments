@@ -83,6 +83,8 @@ class BranchDeployVercelCommand extends Command {
 
         if ($project['httpCode'] !== 200) {
             $this->output("Failed to add domain to project.");
+            $this->output(json_decode($project['response']));
+            return;
         }
 
         $this->output("Domain added to project.");
@@ -105,6 +107,8 @@ class BranchDeployVercelCommand extends Command {
 
         if ($project['httpCode'] !== 200) {
             $this->output("Failed to add backend URL to project.");
+            $this->output(json_decode($project['response']));
+            return;
         }
 
         $this->output("Backend URL added to project.");
