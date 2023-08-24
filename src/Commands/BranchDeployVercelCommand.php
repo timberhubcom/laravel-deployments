@@ -93,7 +93,7 @@ class BranchDeployVercelCommand extends Command {
     protected function addBackendURL(): void {
         $data = [
             'key' => 'NEXT_PUBLIC_BACKEND_URL',
-            'value' => $this->generateOpsDomain(),
+            'value' => 'https://' . $this->generateOpsDomain(),
             'type' => 'plain',
             'target' => ['preview'],
             'gitBranch' => $this->getFrontendBranch(),
