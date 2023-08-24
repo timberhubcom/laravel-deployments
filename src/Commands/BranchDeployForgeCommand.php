@@ -71,7 +71,7 @@ class BranchDeployForgeCommand extends Command {
     protected function findOrCreateSite(Server $server): Site {
         // Retrieve all sites on the server
         $sites = $this->forge->sites($server->id);
-        $domain = $this->generateSiteDomain();
+        $domain = $this->generateOpsDomain();
         $this->output('Domain: ' . $domain);
 
         // Check if the site already exists
