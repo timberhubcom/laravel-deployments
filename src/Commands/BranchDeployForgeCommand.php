@@ -79,6 +79,10 @@ class BranchDeployForgeCommand extends Command {
             if ($site->name === $domain) {
                 $this->output('Found existing site.');
 
+                if ($site->deploymentStatus === null) {
+                    $this->installSite($server, $site, $domain);
+                }
+
                 return $site;
             }
         }
@@ -104,49 +108,73 @@ class BranchDeployForgeCommand extends Command {
         }
 
         $site = $this->forge->createSite($server->id, $data);
+        $this->installSite($server, $site, $domain);
 
-        $this->output('Installing Git repository');
+        return $site;
+    }
 
-        $site->installGitRepository([
-            'provider' => 'github',
-            'repository' => $this->getRepository(),
-            'branch' => $this->getBranch(),
-            'composer' => true,
-        ]);
+    protected function installSite(Server $server, Site $site, string $domain): void {
+        if ($site->repositoryStatus !== 'installed') {
+            $this->output('Installing Git repository');
+
+            $site->installGitRepository([
+                'provider' => 'github',
+                'repository' => $this->getRepository(),
+                'branch' => $this->getBranch(),
+                'composer' => false,
+            ], false);
+            $this->output('Git repository installed');
+
+            // wait for 20 seconds
+            sleep(20);
+        }
 
         if ($this->getQuickDeploy()) {
             $this->output('Enabling quick deploy...');
 
             $site->enableQuickDeploy();
+            $this->output('Quick deploy enabled!');
         }
 
-        $this->output('Generating SSL certificate...');
-        $this->forge->obtainLetsEncryptCertificate($server->id, $site->id, [
-            'domains' => [$domain],
-        ]);
+        $certificates = $this->forge->certificates($server->id, $site->id);
+        $certificate_exists = false;
+        foreach ($certificates as $certificate) {
+            if ($certificate->domain === $domain) {
+                $certificate_exists = true;
+            }
+        }
+
+        if (!$certificate_exists) {
+            $this->output('Generating SSL certificate...');
+            $this->forge->obtainLetsEncryptCertificate($server->id, $site->id, [
+                'domains' => [$domain],
+            ], false);
+        }
 
         // Create DB for this site
         $this->createDatabase($server, $site);
-
-        return $site;
+        $deployment_script = $site->getDeploymentScript();
+        $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
     }
 
     protected function createDatabase(Server $server, Site $site): void {
         $name = $this->getDatabaseName();
 
+        $db_exists = false;
         foreach ($this->forge->databases($server->id) as $database) {
             if ($database->name === $name) {
                 $this->output('Database already exists.');
-
-                return;
+                $db_exists = true;
             }
         }
 
-        $this->output('Creating database');
-        var_dump($this->getDatabaseName());
-        $this->forge->createDatabase($server->id, [
-            'name' => $this->getDatabaseName(),
-        ], /* wait */ true);
+        if (!$db_exists) {
+            $this->output('Creating database');
+            var_dump($this->getDatabaseName());
+            $this->forge->createDatabase($server->id, [
+                'name' => $this->getDatabaseName(),
+            ], /* wait */ true);
+        }
 
         $this->output('Updating site environment variables');
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
@@ -181,6 +209,7 @@ class BranchDeployForgeCommand extends Command {
 
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
 
+        // Deploy the website
         $this->output('Deploying');
         $site->deploySite();
 
@@ -205,5 +234,19 @@ class BranchDeployForgeCommand extends Command {
         }
 
         return $source;
+    }
+
+    protected function cleanDeploymentScript(string $script): string {
+        $pattern = '$FORGE_COMPOSER install';
+        // Explode the content into an array of lines
+        $lines = explode("\n", $script);
+
+        // Filter out lines that start with the specified pattern
+        $filteredLines = array_filter($lines, function($line) use ($pattern) {
+            return strpos($line, $pattern) !== 0;
+        });
+
+        // Combine the filtered lines into a single string
+        return implode("\n", $filteredLines);
     }
 }
