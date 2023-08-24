@@ -213,6 +213,9 @@ class BranchDeployForgeCommand extends Command {
         $this->output('Deploying');
         $site->deploySite();
 
+        // Generate key for the application
+        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "php artisan key:generate"]);
+
         if ($this->getCommands()) {
             foreach ($this->getCommands() as $i => $command) {
                 if ($i === 0) {
