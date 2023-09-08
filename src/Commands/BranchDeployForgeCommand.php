@@ -110,6 +110,8 @@ class BranchDeployForgeCommand extends Command {
         $site = $this->forge->createSite($server->id, $data);
         $this->installSite($server, $site, $domain);
 
+        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
+
         return $site;
     }
 
@@ -212,9 +214,6 @@ class BranchDeployForgeCommand extends Command {
         // Deploy the website
         $this->output('Deploying');
         $site->deploySite();
-
-        // Generate key for the application
-        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "php artisan key:generate"]);
 
         if ($this->getCommands()) {
             foreach ($this->getCommands() as $i => $command) {
