@@ -62,8 +62,22 @@ class BranchDeployForgeCommand extends Command {
 
         // Find or create the site
         $site = $this->findOrCreateSite($server);
-        // Finalize deployment with scripts and environment variables
-        $this->finalizeDeployment($server, $site);
+
+        // Deploy the website
+        $this->output('Deploying');
+        $site->deploySite();
+
+        if ($this->getCommands()) {
+            foreach ($this->getCommands() as $i => $command) {
+                if ($i === 0) {
+                    $this->output('Executing site command(s)');
+                }
+
+                $this->forge->executeSiteCommand($server->id, $site->id, [
+                    'command' => $command,
+                ]);
+            }
+        }
 
         return Command::SUCCESS;
     }
@@ -81,6 +95,8 @@ class BranchDeployForgeCommand extends Command {
 
                 if ($site->deploymentStatus === null) {
                     $this->installSite($server, $site, $domain);
+                    // Finalize deployment with scripts and environment variables
+                    $this->updateEnvFile($server, $site);
                 }
 
                 return $site;
@@ -109,6 +125,8 @@ class BranchDeployForgeCommand extends Command {
 
         $site = $this->forge->createSite($server->id, $data);
         $this->installSite($server, $site, $domain);
+        // Finalize deployment with scripts and environment variables
+        $this->updateEnvFile($server, $site);
 
         $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
 
@@ -187,7 +205,7 @@ class BranchDeployForgeCommand extends Command {
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
     }
 
-    protected function finalizeDeployment(Server $server, Site $site): void {
+    protected function updateEnvFile(Server $server, Site $site): void {
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
         // TODO: Move to command options
         $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
@@ -208,24 +226,7 @@ class BranchDeployForgeCommand extends Command {
             }
         }
 
-
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
-
-        // Deploy the website
-        $this->output('Deploying');
-        $site->deploySite();
-
-        if ($this->getCommands()) {
-            foreach ($this->getCommands() as $i => $command) {
-                if ($i === 0) {
-                    $this->output('Executing site command(s)');
-                }
-
-                $this->forge->executeSiteCommand($server->id, $site->id, [
-                    'command' => $command,
-                ]);
-            }
-        }
     }
 
     protected function updateEnvVariable(string $name, string $value, string $source): string {
