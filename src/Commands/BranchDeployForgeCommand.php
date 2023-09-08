@@ -73,9 +73,11 @@ class BranchDeployForgeCommand extends Command {
                     $this->output('Executing site command(s)');
                 }
 
-                $this->forge->executeSiteCommand($server->id, $site->id, [
-                    'command' => $command,
-                ]);
+                if (! empty($command)) {
+                    $this->forge->executeSiteCommand($server->id, $site->id, [
+                        'command' => $command,
+                    ]);
+                }
             }
         }
 
