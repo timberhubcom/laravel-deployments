@@ -23,7 +23,6 @@ class GetVercelDomainCommand extends Command {
     protected function configure() {
         $this->setDescription('Deploy a branch to Vercel')
             ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'The Vercel API token.')
-            ->addOption('vercel_team', 'vt', InputOption::VALUE_REQUIRED, 'The name of the Vercel team.')
             ->addOption('vercel_domain', 'd', InputOption::VALUE_REQUIRED, 'The domain from Vercel.');
     }
 
@@ -38,15 +37,18 @@ class GetVercelDomainCommand extends Command {
         try {
             // Find the deployment
             $deployment = HTTPRequest::get(
-                'https://api.vercel.com/v13/deployments/' . $this->getVercelDomain(). '?teamId='. $this->getVercelTeam(),
+                'https://api.vercel.com/v13/deployments/' . $this->getVercelDomain(),
                 $this->headers()
             );
-
+            
+            
             if ($deployment['httpCode'] !== 200) {
                 $this->output("Failed to find project.");
                 return Command::FAILURE;
             }
-            $aliasDomain = $deployment['repsonse']['alias'][0];
+
+            $response = json_decode($deployment['response']);
+            $aliasDomain = $response->alias[0];
             
             $this->output($aliasDomain);
         } catch (Exception $_) {
