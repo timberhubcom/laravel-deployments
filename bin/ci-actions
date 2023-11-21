@@ -6,10 +6,12 @@ require_once 'vendor/autoload.php';
 use Timberhub\Commands\BranchDeployForgeCommand;
 use Timberhub\Commands\BranchDeployVercelCommand;
 use Timberhub\Commands\DigitalOceanDomainCommand;
+use Timberhub\Commands\GetVercelDomainCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 $application->add(new BranchDeployForgeCommand());
 $application->add(new BranchDeployVercelCommand());
 $application->add(new DigitalOceanDomainCommand());
+$application->add(new GetVercelDomainCommand());
 $application->run();
