@@ -16,4 +16,8 @@ trait BranchDeployVercelInputs {
     protected function getVercelTeam(): string {
         return $this->input->getOption('vercel_team');
     }
+
+    protected function getVercelDomain(): string {
+        return preg_replace("(^https?://)", "", $this->input->getOption('vercel_domain'));
+    }
 }

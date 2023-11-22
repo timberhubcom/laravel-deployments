@@ -68,7 +68,11 @@ class BranchDeployForgeCommand extends Command {
         $site->deploySite();
 
         if ($this->getCommands()) {
-            foreach ($this->getCommands() as $i => $command) {
+            foreach ($this->getCommands() as $i => $command) {    
+                if ($command === null || $command === "") {
+                    continue;
+                }
+
                 if ($i === 0) {
                     $this->output('Executing site command(s)');
                 }
