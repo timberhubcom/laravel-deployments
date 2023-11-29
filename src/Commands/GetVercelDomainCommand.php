@@ -30,7 +30,7 @@ class GetVercelDomainCommand extends Command {
         // Set input & output in public variables to be accessible in all functions and avoid passing it around
         $this->output = $output;
         $this->input = $input;
-        
+
         try {
             // Find the deployment
             $deployment = HTTPRequest::get(
@@ -45,7 +45,7 @@ class GetVercelDomainCommand extends Command {
             }
 
             $response = json_decode($deployment['response']);
-            $aliasDomain = $response->alias[0];
+            $aliasDomain = 'https://'.$response->alias[0];
             
             $this->output($aliasDomain);
         } catch (Exception $_) {
