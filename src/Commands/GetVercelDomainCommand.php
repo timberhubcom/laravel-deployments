@@ -30,10 +30,7 @@ class GetVercelDomainCommand extends Command {
         // Set input & output in public variables to be accessible in all functions and avoid passing it around
         $this->output = $output;
         $this->input = $input;
-
-        // Set API token and set forge service to public variable
-        $this->output('Vercel API token: ' . $this->getToken());
-
+        
         try {
             // Find the deployment
             $deployment = HTTPRequest::get(
