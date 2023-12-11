@@ -30,12 +30,13 @@ class BranchDeployForgeCommand extends Command {
             ->addOption('server', 's', InputOption::VALUE_OPTIONAL, 'The ID of the target server.')
             ->addOption('repository', 'r', InputOption::VALUE_REQUIRED, 'The name of the repository being deployed.')
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
+            ->addOption('env-name', 'e', InputOption::VALUE_REQUIRED, 'The name of the env you would like to use.')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
             ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
             ->addOption('php-version', 'php', InputOption::VALUE_OPTIONAL, 'The version of PHP the site should use, e.g. php81, php80, ...', 'php81')
-            ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'Comma seperated commands you would like to execute on the site, e.g. php artisan db:seed,php artisan migrate.')
+            ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'Comma separated commands you would like to execute on the site, e.g. php artisan db:seed,php artisan migrate.')
             ->addOption('edit-env', 'env', InputOption::VALUE_OPTIONAL, 'The colon-separated name and value that will be added/updated in the site\'s environment, e.g. "MY_API_KEY:my_api_key_value".') // TODO: Add default .env file config
             ->addOption('isolate', 'iso', InputOption::VALUE_OPTIONAL, 'Enable site isolation.')
             ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', false);

@@ -20,13 +20,22 @@ trait GeneralInfoInputs {
         return $this->input->getOption('branch');
     }
 
+    protected function getEnvName(): string {
+        return $this->input->getOption('env-name');
+    }
+
+    protected function getFullEnvName(): string {
+        return 'th-'.$this->getEnvName();
+    }
+
+
     protected function getDomain(): string {
         return getenv('DEPLOYMENT_DOMAIN') ?? $this->input->getOption('domain');
     }
 
     protected function generateSiteDomain(): string {
         return  implode('.', [
-            $this->getBranch(),
+            $this->getFullEnvName(),
             $this->getDomain(),
         ]);
     }
@@ -34,15 +43,15 @@ trait GeneralInfoInputs {
     protected function generateOpsDomain(): string {
         return  implode('.', [
             'ops',
-            $this->getBranch(),
+            $this->getFullEnvName(),
             $this->getDomain(),
         ]);
     }
 
     protected function generateFrontendDomain(): string {
         return  implode('.', [
-            $this->getFrontendBranch(),
-            $this->getBranch(),
+            'app',
+            $this->getFullEnvName(),
             $this->getDomain(),
         ]);
     }

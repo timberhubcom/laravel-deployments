@@ -24,6 +24,7 @@ class BranchDeployVercelCommand extends Command {
         $this->setDescription('Deploy a branch to Vercel')
             ->addOption('token', 't', InputOption::VALUE_OPTIONAL, 'The Vercel API token.')
             ->addOption('repository', 'r', InputOption::VALUE_REQUIRED, 'The name of the repository being deployed.')
+            ->addOption('env-name', 'e', InputOption::VALUE_REQUIRED, 'The name of the env you would like to use.')
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
             ->addOption('vercel_team', 'vt', InputOption::VALUE_REQUIRED, 'The name of the vercel team.')
             ->addOption('vercel_project', 'vp', InputOption::VALUE_REQUIRED, 'The name of the vercel project.')

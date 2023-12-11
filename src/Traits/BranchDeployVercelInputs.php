@@ -10,11 +10,11 @@ trait BranchDeployVercelInputs {
     }
 
     protected function getVercelProject(): string {
-        return $this->input->getOption('vercel_project');
+        return  getenv('VERCEL_PROJECT_ID') ?? $this->input->getOption('vercel_project');
     }
 
     protected function getVercelTeam(): string {
-        return $this->input->getOption('vercel_team');
+        return getenv('VERCEL_TEAM_ID') ?? $this->input->getOption('vercel_team');
     }
 
     protected function getVercelDomain(): string {
