@@ -3,19 +3,6 @@
 namespace Timberhub\Traits;
 
 trait GeneralInfoInputs {
-    protected function getFrontendBranch(): string {
-        return getenv('FRONTEND_BRANCH') ?? $this->input->getOption('frontend_branch');
-    }
-
-    protected function getRepository(): string {
-        return $this->input->getOption('repository');
-    }
-
-    protected function getRepositoryDirectory():string {
-        $fullPath = explode('/', $this->getRepository());
-        return end($fullPath);
-    }
-
     protected function getBranch(): string {
         return $this->input->getOption('branch');
     }

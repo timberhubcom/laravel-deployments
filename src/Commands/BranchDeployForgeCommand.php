@@ -127,7 +127,7 @@ class BranchDeployForgeCommand extends Command {
             $this->output('Enabling site isolation');
 
             $data['isolation'] = true;
-            $data['username'] = str($this->getBranch())->slug();
+            $data['username'] = $this->getBranch();
         }
 
         $site = $this->forge->createSite($server->id, $data);

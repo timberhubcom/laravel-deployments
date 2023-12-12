@@ -13,6 +13,10 @@ trait BranchDeployForgeInputs {
         return getenv('FORGE_SERVER_ID') ?? $this->input->getOption('server');
     }
 
+    protected function getRepository(): string {
+        return $this->input->getOption('repository');
+    }
+
     protected function getPhpVersion(): string {
         return $this->input->getOption('php-version');
     }
