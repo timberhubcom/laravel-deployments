@@ -26,7 +26,7 @@ trait BranchDeployForgeInputs {
     }
 
     protected function getDatabaseName(): string {
-        return str_replace('-', '', $this->input->getOption('db-name'));
+        return 'th'.str_replace('-', '', $this->input->getOption('db-name'));
     }
 
     protected function getDatabaseUser(): string {
