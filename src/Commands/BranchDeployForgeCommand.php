@@ -13,7 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Timberhub\Traits\BranchDeployForgeInputs;
 use Timberhub\Traits\CommandOutput;
 
-class BranchDeployForgeCommand extends Command {
+class BranchDeployForgeCommand extends Command
+{
     use BranchDeployForgeInputs;
     use CommandOutput;
 
@@ -24,7 +25,8 @@ class BranchDeployForgeCommand extends Command {
     public InputInterface $input;
     public OutputInterface $output;
 
-    protected function configure() {
+    protected function configure()
+    {
         $this->setDescription('Deploy a branch to the staging server')
             ->addOption('token', 't', InputOption::VALUE_OPTIONAL, 'The Forge API token.')
             ->addOption('server', 's', InputOption::VALUE_OPTIONAL, 'The ID of the target server.')
@@ -42,7 +44,8 @@ class BranchDeployForgeCommand extends Command {
             ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', false);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         // Set input & output in public variables to be accessible in all functions and avoid passing it around
         $this->output = $output;
         $this->input = $input;
@@ -69,7 +72,7 @@ class BranchDeployForgeCommand extends Command {
         $site->deploySite();
 
         if ($this->getCommands()) {
-            foreach ($this->getCommands() as $i => $command) {    
+            foreach ($this->getCommands() as $i => $command) {
                 if ($command === null || $command === "") {
                     continue;
                 }
@@ -78,7 +81,7 @@ class BranchDeployForgeCommand extends Command {
                     $this->output('Executing site command(s)');
                 }
 
-                if (! empty($command)) {
+                if (!empty($command)) {
                     $this->forge->executeSiteCommand($server->id, $site->id, [
                         'command' => $command,
                     ]);
@@ -89,7 +92,8 @@ class BranchDeployForgeCommand extends Command {
         return Command::SUCCESS;
     }
 
-    protected function findOrCreateSite(Server $server): Site {
+    protected function findOrCreateSite(Server $server): Site
+    {
         // Retrieve all sites on the server
         $sites = $this->forge->sites($server->id);
         $domain = $this->generateOpsDomain();
@@ -113,7 +117,8 @@ class BranchDeployForgeCommand extends Command {
         return $this->createSite($server, $domain);
     }
 
-    protected function createSite(Server $server, string $domain): Site {
+    protected function createSite(Server $server, string $domain): Site
+    {
         $this->output('Creating site with domain ' . $domain);
 
         $data = [
@@ -140,7 +145,8 @@ class BranchDeployForgeCommand extends Command {
         return $site;
     }
 
-    protected function installSite(Server $server, Site $site, string $domain): void {
+    protected function installSite(Server $server, Site $site, string $domain): void
+    {
         if ($site->repositoryStatus !== 'installed') {
             $this->output('Installing Git repository');
 
@@ -184,22 +190,22 @@ class BranchDeployForgeCommand extends Command {
         $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
     }
 
-    protected function createDatabase(Server $server, Site $site): void {
+    protected function createDatabase(Server $server, Site $site): void
+    {
         $name = $this->getDatabaseName();
 
         $db_exists = false;
         foreach ($this->forge->databases($server->id) as $database) {
             if ($database->name === $name) {
-                $this->output('Database already exists.');
+                $this->output('Database already exists.' . $name);
                 $db_exists = true;
             }
         }
 
         if (!$db_exists) {
-            $this->output('Creating database');
-            var_dump($this->getDatabaseName());
+            $this->output('Creating database' . $name);
             $this->forge->createDatabase($server->id, [
-                'name' => $this->getDatabaseName(),
+                'name' => $name,
             ], /* wait */ true);
         }
 
@@ -212,7 +218,8 @@ class BranchDeployForgeCommand extends Command {
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
     }
 
-    protected function updateEnvFile(Server $server, Site $site): void {
+    protected function updateEnvFile(Server $server, Site $site): void
+    {
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
         // TODO: Move to command options
         $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
@@ -236,8 +243,9 @@ class BranchDeployForgeCommand extends Command {
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
     }
 
-    protected function updateEnvVariable(string $name, string $value, string $source): string {
-        if (! str_contains($source, "{$name}=")) {
+    protected function updateEnvVariable(string $name, string $value, string $source): string
+    {
+        if (!str_contains($source, "{$name}=")) {
             $source .= PHP_EOL . "{$name}={$value}";
         } else {
             $source = preg_replace("/^{$name}=[^\r\n]*/m", "{$name}={$value}", $source, 1);
@@ -246,13 +254,14 @@ class BranchDeployForgeCommand extends Command {
         return $source;
     }
 
-    protected function cleanDeploymentScript(string $script): string {
+    protected function cleanDeploymentScript(string $script): string
+    {
         $pattern = '$FORGE_COMPOSER install';
         // Explode the content into an array of lines
         $lines = explode("\n", $script);
 
         // Filter out lines that start with the specified pattern
-        $filteredLines = array_filter($lines, function($line) use ($pattern) {
+        $filteredLines = array_filter($lines, function ($line) use ($pattern) {
             return strpos($line, $pattern) !== 0;
         });
 
