@@ -149,7 +149,12 @@ class BranchDeployForgeCommand extends Command
     {
         if ($site->repositoryStatus !== 'installed') {
             $this->output('Installing Git repository');
-
+            var_dump([
+                'provider' => 'github',
+                'repository' => $this->getRepository(),
+                'branch' => $this->getBranch(),
+                'composer' => false,
+            ]);
             $site->installGitRepository([
                 'provider' => 'github',
                 'repository' => $this->getRepository(),
