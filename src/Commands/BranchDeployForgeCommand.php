@@ -62,7 +62,7 @@ class BranchDeployForgeCommand extends Command
         $this->output('Domain: ' . $domain);
         
         // Create Site
-        $this->createSite($server, $domain);
+        $site = $this->createSite($server, $domain);
 
         // Install
         $this->installSite($server, $site, $domain);
