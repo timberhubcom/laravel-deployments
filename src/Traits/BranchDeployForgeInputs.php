@@ -17,14 +17,6 @@ trait BranchDeployForgeInputs {
         return $this->input->getOption('repository');
     }
 
-    protected function getPhpVersion(): string {
-        return $this->input->getOption('php-version');
-    }
-
-    protected function getQuickDeploy(): bool {
-        return $this->input->getOption('quick-deploy');
-    }
-
     protected function getDatabaseName(): string {
         return 'th'.str_replace('-', '', $this->input->getOption('db-name'));
     }
@@ -35,13 +27,5 @@ trait BranchDeployForgeInputs {
 
     protected function getDatabasePassword(): string {
         return getenv('DB_USER_PASSWORD') ?? $this->input->getOption('db-password');
-    }
-
-    protected function getCommands() {
-        return explode(',', $this->input->getOption('commands'));
-    }
-
-    protected function getEnvVariables() {
-        return $this->input->getOption('edit-env');
     }
 }

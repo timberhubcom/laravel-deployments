@@ -36,12 +36,7 @@ class BranchDeployForgeCommand extends Command
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
-            ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
-            ->addOption('php-version', 'php', InputOption::VALUE_OPTIONAL, 'The version of PHP the site should use, e.g. php81, php80, ...', 'php81')
-            ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'Comma separated commands you would like to execute on the site, e.g. php artisan db:seed,php artisan migrate.')
-            ->addOption('edit-env', 'env', InputOption::VALUE_OPTIONAL, 'The colon-separated name and value that will be added/updated in the site\'s environment, e.g. "MY_API_KEY:my_api_key_value".') // TODO: Add default .env file config
-            ->addOption('isolate', 'iso', InputOption::VALUE_OPTIONAL, 'Enable site isolation.')
-            ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', true);
+            ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -63,57 +58,32 @@ class BranchDeployForgeCommand extends Command
             return Command::FAILURE;
         }
 
-        // Find or create the site
-        $site = $this->findOrCreateSite($server);
-
-        // Deploy the website
-        $this->output('Deploying');
-        $site->deploySite();
-
-        if ($this->getCommands()) {
-            foreach ($this->getCommands() as $i => $command) {
-                if ($command === null || $command === "") {
-                    continue;
-                }
-
-                if ($i === 0) {
-                    $this->output('Executing site command(s)');
-                }
-
-                if (!empty($command)) {
-                    $this->forge->executeSiteCommand($server->id, $site->id, [
-                        'command' => $command,
-                    ]);
-                }
-            }
-        }
-
-        return Command::SUCCESS;
-    }
-
-    protected function findOrCreateSite(Server $server): Site
-    {
-        // Retrieve all sites on the server
-        $sites = $this->forge->sites($server->id);
         $domain = $this->generateOpsDomain();
         $this->output('Domain: ' . $domain);
+        
+        // Create Site
+        $this->createSite($server, $domain);
 
-        // Check if the site already exists
-        foreach ($sites as $site) {
-            if ($site->name === $domain) {
-                $this->output('Found existing site.');
+        // Install
+        $this->installSite($server, $site, $domain);
 
-                if ($site->deploymentStatus === null) {
-                    $this->installSite($server, $site, $domain);
-                    // Finalize deployment with scripts and environment variables
-                    $this->updateEnvFile($server, $site);
-                }
+        // Create DB for this site
+        $this->createDatabase($server, $site);
 
-                return $site;
-            }
-        }
+        // Finalize deployment with scripts and environment variables
+        $this->updateEnvFile($server, $site);
 
-        return $this->createSite($server, $domain);
+        // clean deployment script
+        $deployment_script = $site->getDeploymentScript();
+        $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
+
+        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
+
+        // Deploy the website
+        // $this->output('Deploying');
+        // $site->deploySite();
+
+        return Command::SUCCESS;
     }
 
     protected function createSite(Server $server, string $domain): Site
@@ -123,24 +93,11 @@ class BranchDeployForgeCommand extends Command
         $data = [
             'domain' => $domain,
             'project_type' => 'php',
-            'php_version' => $this->input->getOption('php-version'),
             'directory' => '/public'
         ];
 
-        if ($this->input->getOption('isolate')) {
-            $this->output('Enabling site isolation');
-
-            $data['isolation'] = true;
-            $data['username'] = $this->getBranch();
-        }
-
         $site = $this->forge->createSite($server->id, $data);
-        $this->installSite($server, $site, $domain);
-        // Finalize deployment with scripts and environment variables
-        $this->updateEnvFile($server, $site);
-
-        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
-
+        
         return $site;
     }
 
@@ -160,12 +117,8 @@ class BranchDeployForgeCommand extends Command
             sleep(20);
         }
 
-        if ($this->getQuickDeploy()) {
-            $this->output('Enabling quick deploy...');
-
-            $site->enableQuickDeploy();
-            $this->output('Quick deploy enabled!');
-        }
+        $site->enableQuickDeploy();
+        $this->output('Quick deploy enabled!');
 
         $certificates = $this->forge->certificates($server->id, $site->id);
         $certificate_exists = false;
@@ -181,11 +134,6 @@ class BranchDeployForgeCommand extends Command
                 'domains' => [$domain],
             ], false);
         }
-
-        // Create DB for this site
-        $this->createDatabase($server, $site);
-        $deployment_script = $site->getDeploymentScript();
-        $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
     }
 
     protected function createDatabase(Server $server, Site $site): void
@@ -208,7 +156,18 @@ class BranchDeployForgeCommand extends Command
         }
 
         $this->output('Updating site environment variables');
+        
+    }
+
+    protected function updateEnvFile(Server $server, Site $site): void
+    {
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
+        $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
+        $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
+        $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
+        $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain(), $envSource);
+        $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->getFrontendDomain() . ',' . $this->generateOpsDomain(), $envSource);
+        $envSource = $this->updateEnvVariable('SESSION_DOMAIN', '.' . $this->generateSiteDomain(), $envSource);
         $envSource = $this->updateEnvVariable('DB_DATABASE', $this->getDatabaseName(), $envSource);
         $envSource = $this->updateEnvVariable('DB_USERNAME', $this->getDatabaseUser(), $envSource);
         $envSource = $this->updateEnvVariable('DB_PASSWORD', $this->getDatabasePassword(), $envSource);
@@ -216,31 +175,7 @@ class BranchDeployForgeCommand extends Command
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
     }
 
-    protected function updateEnvFile(Server $server, Site $site): void
-    {
-        $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
-        // TODO: Move to command options
-        $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
-        $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
-        $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
-        $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain(), $envSource);
-        $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->getFrontendDomain() . ',' . $this->generateOpsDomain(), $envSource);
-        $envSource = $this->updateEnvVariable('SESSION_DOMAIN', '.' . $this->generateSiteDomain(), $envSource);
-
-
-        if ($this->getEnvVariables()) {
-            $this->output('Updating environment variables');
-
-            foreach ($this->getEnvVariables() as $env) {
-                [$key, $value] = explode(':', $env, 2);
-
-                $envSource = $this->updateEnvVariable($key, $value, $envSource);
-            }
-        }
-
-        $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
-    }
-
+    //utils
     protected function updateEnvVariable(string $name, string $value, string $source): string
     {
         if (!str_contains($source, "{$name}=")) {
