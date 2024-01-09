@@ -41,7 +41,7 @@ class BranchDeployForgeCommand extends Command
             ->addOption('commands', 'c', InputOption::VALUE_OPTIONAL, 'Comma separated commands you would like to execute on the site, e.g. php artisan db:seed,php artisan migrate.')
             ->addOption('edit-env', 'env', InputOption::VALUE_OPTIONAL, 'The colon-separated name and value that will be added/updated in the site\'s environment, e.g. "MY_API_KEY:my_api_key_value".') // TODO: Add default .env file config
             ->addOption('isolate', 'iso', InputOption::VALUE_OPTIONAL, 'Enable site isolation.')
-            ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', false);
+            ->addOption('quick-deploy', 'qd', InputOption::VALUE_OPTIONAL, 'Create your site with "Quick Deploy".', true);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -51,7 +51,6 @@ class BranchDeployForgeCommand extends Command
         $this->input = $input;
 
         // Set API token and set forge service to public variable
-        $this->output('Forge API token: ' . $this->getToken());
         $forge = new Forge($this->getToken());
         $this->forge = $forge;
 
@@ -224,8 +223,8 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
         $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
         $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
-        $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->generateFrontendDomain(), $envSource);
-        $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->generateFrontendDomain() . ',' . $this->generateOpsDomain(), $envSource);
+        $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain(), $envSource);
+        $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->getFrontendDomain() . ',' . $this->generateOpsDomain(), $envSource);
         $envSource = $this->updateEnvVariable('SESSION_DOMAIN', '.' . $this->generateSiteDomain(), $envSource);
 
 

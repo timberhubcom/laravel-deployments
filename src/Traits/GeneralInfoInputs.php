@@ -35,7 +35,7 @@ trait GeneralInfoInputs {
         ]);
     }
 
-    protected function generateFrontendDomain(): string {
+    protected function getFrontendDomain(): string {
         return  implode('.', [
             'app',
             $this->getFullEnvName(),

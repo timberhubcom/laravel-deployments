@@ -71,7 +71,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function addDomainToProject(): void {
         $data = [
-            'name' => $this->generateFrontendDomain(),
+            'name' => $this->getFrontendDomain(),
             'gitBranch' => $this->getBranch(),
         ];
 

@@ -50,7 +50,7 @@ class DigitalOceanDomainCommand  extends Command {
     protected function addDomain(): void {
         $data = [
             'type' => "CNAME",
-            'name' => str_replace('.'.$this->domain, '',$this->generateFrontendDomain()),
+            'name' => str_replace('.'.$this->domain, '',$this->getFrontendDomain()),
             'data' => 'cname.vercel-dns.com.',
             'ttl' => 30,
         ];
