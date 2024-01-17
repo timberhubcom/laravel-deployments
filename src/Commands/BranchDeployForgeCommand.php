@@ -6,6 +6,7 @@ use Exception;
 use Laravel\Forge\Forge;
 use Laravel\Forge\Resources\Server;
 use Laravel\Forge\Resources\Site;
+use Laravel\Forge\Resources\Daemon;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -73,6 +74,9 @@ class BranchDeployForgeCommand extends Command
         // Finalize deployment with scripts and environment variables
         $this->updateEnvFile($server, $site);
 
+        // create queue
+        $this->createDaemon($server);
+
         // clean deployment script
         $deployment_script = $site->getDeploymentScript();
         $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
@@ -84,6 +88,19 @@ class BranchDeployForgeCommand extends Command
         // $site->deploySite();
 
         return Command::SUCCESS;
+    }
+
+    protected function createDaemon(Server $server): Daemon
+    {
+        $this->output('Creating queue');
+
+        $data = [
+            'command' => 'php8.1 artisan horizon',
+            'user' => 'forge',
+            'directory' => '/home/forge/'.$this->generateOpsDomain()
+        ];
+
+        return $this->forge->createDaemon($server->id);
     }
 
     protected function createSite(Server $server, string $domain): Site
