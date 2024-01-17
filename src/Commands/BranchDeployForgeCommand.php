@@ -100,7 +100,7 @@ class BranchDeployForgeCommand extends Command
             'directory' => '/home/forge/'.$this->generateOpsDomain()
         ];
 
-        return $this->forge->createDaemon($server->id);
+        return $this->forge->createDaemon($server->id, $data);
     }
 
     protected function createSite(Server $server, string $domain): Site
