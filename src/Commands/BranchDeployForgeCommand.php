@@ -60,7 +60,7 @@ class BranchDeployForgeCommand extends Command
         }
 
         $domain = $this->generateOpsDomain();
-        $this->output('Domain: ' . $domain);
+        $this->output('Domain: https://' . $domain);
         
         // Create Site
         $site = $this->createSite($server, $domain);
@@ -82,7 +82,7 @@ class BranchDeployForgeCommand extends Command
         $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
 
         $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
-
+        $this->output('Build executed');
         // Deploy the website
         // $this->output('Deploying');
         // $site->deploySite();
@@ -105,16 +105,16 @@ class BranchDeployForgeCommand extends Command
 
     protected function createSite(Server $server, string $domain): Site
     {
-        $this->output('Creating site with domain ' . $domain);
-
+        
         $data = [
             'domain' => $domain,
             'project_type' => 'php',
             'directory' => '/public'
         ];
-
+        
         $site = $this->forge->createSite($server->id, $data);
         
+        $this->output('Site created with domain ' . $domain);
         return $site;
     }
 
@@ -171,13 +171,12 @@ class BranchDeployForgeCommand extends Command
                 'name' => $name,
             ], /* wait */ true);
         }
-
-        $this->output('Updating site environment variables');
         
     }
 
     protected function updateEnvFile(Server $server, Site $site): void
     {
+        $this->output('Updating site environment variables');
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
         $envSource = $this->updateEnvVariable('APP_ENV', $this->getBranch(), $envSource);
         $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
@@ -190,6 +189,7 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('DB_PASSWORD', $this->getDatabasePassword(), $envSource);
 
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
+        $this->output('Site environment variables updated');
     }
 
     //utils

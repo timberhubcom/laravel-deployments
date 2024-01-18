@@ -36,9 +36,6 @@ class BranchDeployVercelCommand extends Command {
         $this->output = $output;
         $this->input = $input;
 
-        // Set API token and set forge service to public variable
-        $this->output('Vercel API token: ' . $this->getToken());
-
         try {
             // Find the project
             $project = HTTPRequest::get(

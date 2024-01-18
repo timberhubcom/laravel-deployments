@@ -32,9 +32,7 @@ class DigitalOceanDomainCommand  extends Command {
         // Set input & output in public variables to be accessible in all functions and avoid passing it around
         $this->output = $output;
         $this->input = $input;
-
-        // Set API token and set forge service to public variable
-        $this->output('DO API token: ' . $this->getToken());
+        
         $this->addDomain();
 
         return Command::SUCCESS;
