@@ -84,7 +84,7 @@ class BranchDeployVercelCommand extends Command {
             return;
         }
 
-        $this->output("Domain added to project.");
+        $this->output("Domain added to project: https://" . $this->getFrontendDomain());
     }
 
     protected function addBackendURL(): void {
