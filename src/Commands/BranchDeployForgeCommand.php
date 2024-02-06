@@ -176,10 +176,13 @@ class BranchDeployForgeCommand extends Command
 
     protected function updateEnvFile(Server $server, Site $site): void
     {
+        $branch = $this->getBranch();
+        $appEnv = in_array(strtolower($branch), ['main', 'production']) ? $branch : 'th-' . $branch;
+
         $this->output('Updating site environment variables');
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
-        $envSource = $this->updateEnvVariable('APP_ENV', 'th-' . $this->getBranch(), $envSource);
-        $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
+        $envSource = $this->updateEnvVariable('APP_ENV', $appEnv, $envSource);
+        $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $branch, $envSource);
         $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
         $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain(), $envSource);
         $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->getFrontendDomain() . ',' . $this->generateOpsDomain(), $envSource);
