@@ -25,6 +25,8 @@ class BranchDeployForgeCommand extends Command
 
     public InputInterface $input;
     public OutputInterface $output;
+    public $CREATE = 'create';
+    public $DELETE = 'delete';
 
     protected function configure()
     {
@@ -37,7 +39,8 @@ class BranchDeployForgeCommand extends Command
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
-            ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.');
+            ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
+            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $CREATE . ' or ' . $DELETE, $CREATE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -62,30 +65,68 @@ class BranchDeployForgeCommand extends Command
         $domain = $this->generateOpsDomain();
         $this->output('Domain: https://' . $domain);
         
-        // Create Site
-        $site = $this->createSite($server, $domain);
+        $sites = $this->forge->sites($server->id);
 
-        // Install
-        $this->installSite($server, $site, $domain);
+        if ($this->getAction() === $CREATE) {
+            
+            // Check if the site already exists
+            foreach ($sites as $site) {
+                if ($site->name === $domain) {
+                    $this->output('Site already exist');
+                    return Command::SUCCESS;
+                }
+            }
+            // Create Site
+            $site = $this->createSite($server, $domain);
 
-        // Create DB for this site
-        $this->createDatabase($server, $site);
+            // Install
+            $this->installSite($server, $site, $domain);
 
-        // Finalize deployment with scripts and environment variables
-        $this->updateEnvFile($server, $site);
+            // Create DB for this site
+            $this->createDatabase($server, $site);
 
-        // create queue
-        $this->createDaemon($server);
+            // Finalize deployment with scripts and environment variables
+            $this->updateEnvFile($server, $site);
 
-        // clean deployment script
-        $deployment_script = $site->getDeploymentScript();
-        $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
+            // create queue
+            $this->createDaemon($server);
 
-        $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
-        $this->output('Build executed');
-        // Deploy the website
-        // $this->output('Deploying');
-        // $site->deploySite();
+            // clean deployment script
+            $deployment_script = $site->getDeploymentScript();
+            $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
+
+            $this->forge->executeSiteCommand($server->id, $site->id, ['command' => "make build"]);
+            $this->output('Build executed');
+        }
+
+        if ($this->getAction() === $DELETE) { 
+            
+            foreach ($sites as $site) {
+                if ($site->name === $domain) {
+                    $site->delete();
+                    $this->output('Site deleted');
+                }
+            }
+            $name = $this->getDatabaseName();
+
+            foreach ($this->forge->databases($server->id) as $database) {
+                if ($database->name === $name) {
+                    $database->delete();
+                    $this->output('DB deleted');
+                }
+            }
+
+            foreach ($this->forge->daemons($server->id) as $daemon) {
+                $directory = '/home/forge/'.$this->generateOpsDomain();
+                if ($daemon->directory === $directory) {
+                    $daemon->delete();
+                    $this->output('daemon deleted');
+                }
+            }
+            
+            return Command::SUCCESS;
+        }
+        
 
         return Command::SUCCESS;
     }
@@ -104,8 +145,7 @@ class BranchDeployForgeCommand extends Command
     }
 
     protected function createSite(Server $server, string $domain): Site
-    {
-        
+    {   
         $data = [
             'domain' => $domain,
             'project_type' => 'php',

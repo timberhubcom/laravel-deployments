@@ -44,4 +44,24 @@ class HTTPRequest {
             'response' => $response,
         ];
     }
+
+    /**
+     * @param string $url
+     * @param array $headers
+     * @return array
+     */
+    public static function delete(string $url, array $headers = []): array {
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        return [
+            'httpCode' => $httpCode,
+            'response' => $response,
+        ];
+    }
 }

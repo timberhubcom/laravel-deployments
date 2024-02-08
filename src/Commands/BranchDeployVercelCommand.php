@@ -19,6 +19,9 @@ class BranchDeployVercelCommand extends Command {
 
     public InputInterface $input;
     public OutputInterface $output;
+    public $BACKEND_KEY = 'NEXT_PUBLIC_BACKEND_URL';
+    public $CREATE = 'create';
+    public $DELETE = 'delete';
 
     protected function configure() {
         $this->setDescription('Deploy a branch to Vercel')
@@ -28,7 +31,8 @@ class BranchDeployVercelCommand extends Command {
             ->addOption('vercel_team', 'vt', InputOption::VALUE_REQUIRED, 'The name of the vercel team.')
             ->addOption('vercel_project', 'vp', InputOption::VALUE_REQUIRED, 'The name of the vercel project.')
             ->addOption('frontend_branch', 'fb', InputOption::VALUE_REQUIRED, 'The name of the frontend branch.')
-            ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.');
+            ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
+            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $CREATE . ' or ' . $DELETE, $CREATE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -54,8 +58,16 @@ class BranchDeployVercelCommand extends Command {
             return Command::FAILURE;
         }
 
-        $this->addDomainToProject();
-        $this->addBackendURL();
+        if ($this->getAction() === $CREATE) {
+            $this->addDomainToProject();
+            $this->addBackendURL();
+        }
+
+        if ($this->getAction() === $DELETE) { 
+            $this->removeDomainURL();
+            $this->removeEnvVariable();
+        }
+        
 
         return Command::SUCCESS;
     }
@@ -89,7 +101,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function addBackendURL(): void {
         $data = [
-            'key' => 'NEXT_PUBLIC_BACKEND_URL',
+            'key' => $BACKEND_KEY,
             'value' => 'https://' . $this->generateOpsDomain(),
             'type' => 'plain',
             'target' => ['preview'],
@@ -109,5 +121,35 @@ class BranchDeployVercelCommand extends Command {
         }
 
         $this->output("Backend URL added to project.");
+    }
+
+     protected function removeDomainURL(): void {
+        $project = HTTPRequest::delete(
+            'https://api.vercel.com/v6/domains/' . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
+            $this->headers()
+        );
+
+        if ($project['httpCode'] !== 200) {
+            $this->output("Failed to delete domain URL.");
+            $this->output($project['response']);
+            return;
+        }
+
+        $this->output("Domain URL deleted.");
+    }
+
+    protected function removeEnvVariable(): void {
+        $project = HTTPRequest::delete(
+            'https://api.vercel.com/v9/projects/' . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
+            $this->headers()
+        );
+
+        if ($project['httpCode'] !== 200) {
+            $this->output("Failed to remove env variable.");
+            $this->output($project['response']);
+            return;
+        }
+
+        $this->output("Env variable deleted.");
     }
 }
