@@ -22,6 +22,9 @@ class BranchDeployVercelCommand extends Command {
     public $BACKEND_KEY = 'NEXT_PUBLIC_BACKEND_URL';
     public $CREATE = 'create';
     public $DELETE = 'delete';
+    public $PROJECT_ENDPOINT =  'https://api.vercel.com/v9/projects/';
+    public $DOMAIN_ENDPOINT =  'https://api.vercel.com/v6/domains/';
+    
 
     protected function configure() {
         $this->setDescription('Deploy a branch to Vercel')
@@ -43,7 +46,7 @@ class BranchDeployVercelCommand extends Command {
         try {
             // Find the project
             $project = HTTPRequest::get(
-                'https://api.vercel.com/v9/projects/' . $this->getVercelProject(). '?teamId='. $this->getVercelTeam(),
+                $PROJECT_ENDPOINT . $this->getVercelProject(). '?teamId='. $this->getVercelTeam(),
                 $this->headers()
             );
 
@@ -85,7 +88,7 @@ class BranchDeployVercelCommand extends Command {
         ];
 
         $project = HTTPRequest::post(
-            'https://api.vercel.com/v9/projects/' . $this->getVercelProject(). '/domains?teamId='. $this->getVercelTeam(),
+            $PROJECT_ENDPOINT . $this->getVercelProject(). '/domains?teamId='. $this->getVercelTeam(),
             $data,
             $this->headers()
         );
@@ -109,7 +112,7 @@ class BranchDeployVercelCommand extends Command {
         ];
 
         $project = HTTPRequest::post(
-            'https://api.vercel.com/v9/projects/' . $this->getVercelProject(). '/env?teamId='. $this->getVercelTeam(),
+            $PROJECT_ENDPOINT . $this->getVercelProject(). '/env?teamId='. $this->getVercelTeam(),
             $data,
             $this->headers()
         );
@@ -125,7 +128,7 @@ class BranchDeployVercelCommand extends Command {
 
      protected function removeDomainURL(): void {
         $project = HTTPRequest::delete(
-            'https://api.vercel.com/v6/domains/' . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
+            $DOMAIN_ENDPOINT . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
@@ -140,7 +143,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function removeEnvVariable(): void {
         $project = HTTPRequest::delete(
-            'https://api.vercel.com/v9/projects/' . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
+            $PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
