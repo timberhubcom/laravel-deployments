@@ -123,10 +123,7 @@ class BranchDeployForgeCommand extends Command
                     $this->output('daemon deleted');
                 }
             }
-            
-            return Command::SUCCESS;
         }
-        
 
         return Command::SUCCESS;
     }
