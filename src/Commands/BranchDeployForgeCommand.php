@@ -66,9 +66,6 @@ class BranchDeployForgeCommand extends Command
         // Create Site
         $site = $this->createSite($server, $domain);
 
-        // Set PHP version
-        $this->forge->changeSitePHPVersion($server->id, $site->id, $this->getPhpVersionCode());
-
         // Install
         $this->installSite($server, $site, $domain);
 
@@ -124,6 +121,12 @@ class BranchDeployForgeCommand extends Command
 
     protected function installSite(Server $server, Site $site, string $domain): void
     {
+        // Set PHP version
+        $phpVersion = $this->getPhpVersionCode();
+
+        $this->forge->changeSitePHPVersion($server->id, $site->id, $phpVersion);
+        $this->output('PHP version set to ' . $phpVersion);
+
         if ($site->repositoryStatus !== 'installed') {
             $this->output('Installing Git repository');
             $site->installGitRepository([
