@@ -33,4 +33,8 @@ trait BranchDeployForgeInputs {
         $version = strtolower($this->input->getOption('php-version'));
         return in_array($version, ['php8.1', 'php8.2']) ? $version : 'php8.1';
     }
+
+    protected function getPhpVersionCode(): string {
+        return str_replace('.', '', $this->getPhpVersion());
+    }
 }
