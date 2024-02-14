@@ -31,6 +31,7 @@ Use the following command to deploy your application to a Forge server like this
   --repository=[REPOSITORY_URL] \
   --branch=[BRANCH_NAME] \
   --domain=[DOMAIN_NAME] \
+  --php-version=[PHP_VERSION] \
   --db-name=[DB_NAME] \
   --db-user=[DB_USER] \
   --db-password=[DB_PASSWORD]

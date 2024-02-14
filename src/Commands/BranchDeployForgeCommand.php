@@ -35,6 +35,7 @@ class BranchDeployForgeCommand extends Command
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
             ->addOption('env-name', 'e', InputOption::VALUE_REQUIRED, 'The name of the env you would like to use.')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
+            ->addOption('php-version', 'php-v', InputOption::VALUE_OPTIONAL, 'The PHP version we are creating the env with.', 'php8.1')
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
             ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.');
@@ -95,7 +96,7 @@ class BranchDeployForgeCommand extends Command
         $this->output('Creating queue');
 
         $data = [
-            'command' => 'php8.1 artisan horizon',
+            'command' => $this->getPhpVersion().' artisan horizon',
             'user' => 'forge',
             'directory' => '/home/forge/'.$this->generateOpsDomain()
         ];

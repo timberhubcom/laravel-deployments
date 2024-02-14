@@ -28,4 +28,9 @@ trait BranchDeployForgeInputs {
     protected function getDatabasePassword(): string {
         return getenv('DB_USER_PASSWORD') ?? $this->input->getOption('db-password');
     }
+
+    protected function getPhpVersion(): string {
+        $version = strtolower($this->input->getOption('php-version'));
+        return in_array($version, ['php8.1', 'php8.2']) ? $version : 'php8.1';
+    }
 }
