@@ -66,6 +66,9 @@ class BranchDeployForgeCommand extends Command
         // Create Site
         $site = $this->createSite($server, $domain);
 
+        // Set the site to use the PHP version
+        $this->forge->changeSitePHPVersion($server->id, $site->id, $this->getPhpVersion());
+
         // Install
         $this->installSite($server, $site, $domain);
 
