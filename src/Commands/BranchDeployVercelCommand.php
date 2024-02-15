@@ -145,7 +145,7 @@ class BranchDeployVercelCommand extends Command {
             $this->headers()
         );
 
-        $data = json_decode($envs['response']);
+        $data = json_decode($envs['response'], true);
         foreach ($data['envs'] as $env) {
             if ($env->gitBranch === $this->getBranch()) {
                 $project = HTTPRequest::delete(
