@@ -22,9 +22,7 @@ class BranchDeployVercelCommand extends Command {
     public $BACKEND_KEY = 'NEXT_PUBLIC_BACKEND_URL';
     public $CREATE = 'create';
     public $DELETE = 'delete';
-    public $PROJECT_ENDPOINT =  'https://api.vercel.com/v9/projects/';
-    public $DOMAIN_ENDPOINT =  'https://api.vercel.com/v6/domains/';
-    
+    public $PROJECT_ENDPOINT =  'https://api.vercel.com/v9/projects/';    
 
     protected function configure() {
         $this->setDescription('Deploy a branch to Vercel')
@@ -128,7 +126,7 @@ class BranchDeployVercelCommand extends Command {
 
      protected function removeDomainURL(): void {
         $project = HTTPRequest::delete(
-            $this->DOMAIN_ENDPOINT . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/domains/' . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
@@ -142,17 +140,26 @@ class BranchDeployVercelCommand extends Command {
     }
 
     protected function removeEnvVariable(): void {
-        $project = HTTPRequest::delete(
-            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
+        $envs = HTTPRequest::get(
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
-        if ($project['httpCode'] !== 200) {
-            $this->output("Failed to remove env variable.");
-            $this->output($project['response']);
-            return;
-        }
+        foreach ($envs['response']->envs as $env) {
+            if ($env->gitBranch === $this->getBranch()) {
+                $project = HTTPRequest::delete(
+                    $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $env->id . '?teamId='. $this->getVercelTeam(),
+                    $this->headers()
+                );
 
-        $this->output("Env variable deleted.");
+                if ($project['httpCode'] !== 200) {
+                    $this->output("Failed to remove " . $env->key ." env variable.");
+                    $this->output($project['response']);
+                } else {
+                    $this->output("Env " . $env->key ." variable deleted.");
+                }
+
+            }
+        }    
     }
 }
