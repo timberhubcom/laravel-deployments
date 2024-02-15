@@ -61,6 +61,7 @@ class DigitalOceanDomainCommand  extends Command {
 
         if ($domain['httpCode'] !== 200 && $domain['httpCode'] !== 201) {
             $this->output("Failed to add domain to project.");
+            return;
         }
 
         $this->output("Domain added to project.");
