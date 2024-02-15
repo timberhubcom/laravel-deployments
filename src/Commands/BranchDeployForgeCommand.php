@@ -41,7 +41,7 @@ class BranchDeployForgeCommand extends Command
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
             ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
-            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $CREATE . ' or ' . $DELETE, $CREATE);
+            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $this->$CREATE . ' or ' . $this->$DELETE, $this->$CREATE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -68,7 +68,7 @@ class BranchDeployForgeCommand extends Command
         
         $sites = $this->forge->sites($server->id);
 
-        if ($this->getAction() === $CREATE) {
+        if ($this->getAction() === $this->$CREATE) {
             
             // Check if the site already exists
             foreach ($sites as $site) {
@@ -100,7 +100,7 @@ class BranchDeployForgeCommand extends Command
             $this->output('Build executed');
         }
 
-        if ($this->getAction() === $DELETE) { 
+        if ($this->getAction() === $this->$DELETE) { 
             
             foreach ($sites as $site) {
                 if ($site->name === $domain) {
