@@ -41,7 +41,7 @@ class BranchDeployForgeCommand extends Command
             ->addOption('db-name', 'db', InputOption::VALUE_REQUIRED, 'The db name.')
             ->addOption('db-user', 'db-u', InputOption::VALUE_OPTIONAL, 'The db username.')
             ->addOption('db-password', 'db-p', InputOption::VALUE_OPTIONAL, 'The db password.')
-            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $this->CREATE . ' or ' . $this->DELETE, $this->CREATE);
+            ->addOption('action', 'a', InputOption::VALUE_REQUIRED, 'action: ' . $this->CREATE . ' or ' . $this->DELETE, $this->CREATE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

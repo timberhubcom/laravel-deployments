@@ -35,7 +35,7 @@ class BranchDeployVercelCommand extends Command {
             ->addOption('vercel_project', 'vp', InputOption::VALUE_REQUIRED, 'The name of the vercel project.')
             ->addOption('frontend_branch', 'fb', InputOption::VALUE_REQUIRED, 'The name of the frontend branch.')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
-            ->addOption('action', 'd', InputOption::VALUE_REQUIRED, 'action: ' . $CREATE . ' or ' . $DELETE, $CREATE);
+            ->addOption('action', 'a', InputOption::VALUE_REQUIRED, 'action: ' . $CREATE . ' or ' . $DELETE, $CREATE);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
