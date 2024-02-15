@@ -46,7 +46,7 @@ class BranchDeployVercelCommand extends Command {
         try {
             // Find the project
             $project = HTTPRequest::get(
-                $PROJECT_ENDPOINT . $this->getVercelProject(). '?teamId='. $this->getVercelTeam(),
+                $this->PROJECT_ENDPOINT . $this->getVercelProject(). '?teamId='. $this->getVercelTeam(),
                 $this->headers()
             );
 
@@ -88,7 +88,7 @@ class BranchDeployVercelCommand extends Command {
         ];
 
         $project = HTTPRequest::post(
-            $PROJECT_ENDPOINT . $this->getVercelProject(). '/domains?teamId='. $this->getVercelTeam(),
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/domains?teamId='. $this->getVercelTeam(),
             $data,
             $this->headers()
         );
@@ -112,7 +112,7 @@ class BranchDeployVercelCommand extends Command {
         ];
 
         $project = HTTPRequest::post(
-            $PROJECT_ENDPOINT . $this->getVercelProject(). '/env?teamId='. $this->getVercelTeam(),
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env?teamId='. $this->getVercelTeam(),
             $data,
             $this->headers()
         );
@@ -128,7 +128,7 @@ class BranchDeployVercelCommand extends Command {
 
      protected function removeDomainURL(): void {
         $project = HTTPRequest::delete(
-            $DOMAIN_ENDPOINT . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
+            $this->DOMAIN_ENDPOINT . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
@@ -143,7 +143,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function removeEnvVariable(): void {
         $project = HTTPRequest::delete(
-            $PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $this->BACKEND_KEY . '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
