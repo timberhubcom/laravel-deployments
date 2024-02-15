@@ -104,7 +104,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function addBackendURL(): void {
         $data = [
-            'key' => $BACKEND_KEY,
+            'key' => $this->BACKEND_KEY,
             'value' => 'https://' . $this->generateOpsDomain(),
             'type' => 'plain',
             'target' => ['preview'],
