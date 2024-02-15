@@ -145,7 +145,7 @@ class BranchDeployVercelCommand extends Command {
             $this->headers()
         );
 
-        $data = json_decode($envs['response'], true);
+        $data = json_decode($envs['response']);
         foreach ($data['envs'] as $env) {
             var_dump($env);
             var_dump($env['gitBranch']);
