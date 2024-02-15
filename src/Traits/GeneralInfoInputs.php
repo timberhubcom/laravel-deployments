@@ -42,4 +42,8 @@ trait GeneralInfoInputs {
             $this->getDomain(),
         ]);
     }
+
+    protected function getAction(): string {
+        return $this->input->getOption('action');
+    }
 }
