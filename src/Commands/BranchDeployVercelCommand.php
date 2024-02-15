@@ -31,7 +31,6 @@ class BranchDeployVercelCommand extends Command {
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
             ->addOption('vercel_team', 'vt', InputOption::VALUE_REQUIRED, 'The name of the vercel team.')
             ->addOption('vercel_project', 'vp', InputOption::VALUE_REQUIRED, 'The name of the vercel project.')
-            ->addOption('frontend_branch', 'fb', InputOption::VALUE_REQUIRED, 'The name of the frontend branch.')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
             ->addOption('action', 'a', InputOption::VALUE_REQUIRED, 'action: ' . $this->CREATE . ' or ' . $this->DELETE, $this->CREATE);
     }
@@ -145,20 +144,19 @@ class BranchDeployVercelCommand extends Command {
             $this->headers()
         );
 
-        $data = json_decode($envs['response'], true);
-        foreach ($data['envs'] as $key => $env) {
-            var_dump($env);
-            if ($env->gitBranch === $this->getBranch()) {
+        $data = json_decode($envs['response']);
+        foreach ($data->envs as $env) {
+            if (isset($env->gitBranch) && $env->gitBranch === $this->getBranch()) {
                 $project = HTTPRequest::delete(
-                    $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $env->id . '?teamId='. $this->getVercelTeam(),
+                    $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $env['id'] . '?teamId='. $this->getVercelTeam(),
                     $this->headers()
                 );
 
                 if ($project['httpCode'] !== 200) {
-                    $this->output("Failed to remove " . $env->key ." env variable.");
+                    $this->output("Failed to remove " . $env['key'] ." env variable.");
                     $this->output($project['response']);
                 } else {
-                    $this->output("Env " . $env->key ." variable deleted.");
+                    $this->output("Env " . $env['key'] ." variable deleted.");
                 }
 
             }
