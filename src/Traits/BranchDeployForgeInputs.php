@@ -37,4 +37,20 @@ trait BranchDeployForgeInputs {
     protected function getPhpVersionCode(): string {
         return str_replace('.', '', $this->getPhpVersion());
     }
+
+    protected function getSupabaseDbHost(): string {
+        return $this->input->getOption('supabase-db-host');
+    }
+
+    protected function getSupabaseDbDatabase(): string {
+        return $this->input->getOption('supabase-db-database');
+    }
+
+    protected function getSupabaseDbUsername(): string {
+        return $this->input->getOption('supabase-db-username');
+    }
+
+    protected function getSupabaseDbPassword(): string {
+        return $this->input->getOption('supabase-db-password');
+    }
 }
