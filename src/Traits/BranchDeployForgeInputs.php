@@ -21,6 +21,10 @@ trait BranchDeployForgeInputs {
         return 'th'.str_replace('-', '', $this->input->getOption('db-name'));
     }
 
+    protected function getSupabaseDatabaseName(): string {
+        return $this->getDatabaseName().'_supabase';
+    }
+
     protected function getDatabaseUser(): string {
         return getenv('DB_USER') ?? $this->input->getOption('db-user');
     }
@@ -36,21 +40,5 @@ trait BranchDeployForgeInputs {
 
     protected function getPhpVersionCode(): string {
         return str_replace('.', '', $this->getPhpVersion());
-    }
-
-    protected function getSupabaseDbHost(): string {
-        return $this->input->getOption('supabase-db-host');
-    }
-
-    protected function getSupabaseDbDatabase(): string {
-        return $this->input->getOption('supabase-db-database');
-    }
-
-    protected function getSupabaseDbUsername(): string {
-        return $this->input->getOption('supabase-db-username');
-    }
-
-    protected function getSupabaseDbPassword(): string {
-        return $this->input->getOption('supabase-db-password');
     }
 }

@@ -84,7 +84,8 @@ class BranchDeployForgeCommand extends Command
             $this->installSite($server, $site, $domain);
 
             // Create DB for this site
-            $this->createDatabase($server, $site);
+            $this->createDatabase($server, $this->getDatabaseName());
+            $this->createDatabase($server, $this->getSupabaseDatabaseName());
 
             // Finalize deployment with scripts and environment variables
             $this->updateEnvFile($server, $site);
@@ -197,10 +198,8 @@ class BranchDeployForgeCommand extends Command
         }
     }
 
-    protected function createDatabase(Server $server, Site $site): void
+    protected function createDatabase(Server $server, string $name): void
     {
-        $name = $this->getDatabaseName();
-
         $db_exists = false;
         foreach ($this->forge->databases($server->id) as $database) {
             if ($database->name === $name) {
@@ -215,7 +214,6 @@ class BranchDeployForgeCommand extends Command
                 'name' => $name,
             ], /* wait */ true);
         }
-        
     }
 
     protected function updateEnvFile(Server $server, Site $site): void
@@ -231,10 +229,9 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('DB_DATABASE', $this->getDatabaseName(), $envSource);
         $envSource = $this->updateEnvVariable('DB_USERNAME', $this->getDatabaseUser(), $envSource);
         $envSource = $this->updateEnvVariable('DB_PASSWORD', $this->getDatabasePassword(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_HOST', $this->getSupabaseDbHost(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_DATABASE', $this->getSupabaseDbDatabase(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_USERNAME', $this->getSupabaseDbUsername(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_PASSWORD', $this->getSupabaseDbPassword(), $envSource);
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_DATABASE', $this->getSupabaseDatabaseName(), $envSource);
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_USERNAME', $this->getDatabaseUser(), $envSource);
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_PASSWORD', $this->getDatabasePassword(), $envSource);
 
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
         $this->output('Site environment variables updated');
