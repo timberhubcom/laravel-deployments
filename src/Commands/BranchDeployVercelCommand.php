@@ -148,15 +148,15 @@ class BranchDeployVercelCommand extends Command {
         foreach ($data->envs as $env) {
             if (isset($env->gitBranch) && $env->gitBranch === $this->getBranch()) {
                 $project = HTTPRequest::delete(
-                    $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $env['id'] . '?teamId='. $this->getVercelTeam(),
+                    $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/env/' . $env->id . '?teamId='. $this->getVercelTeam(),
                     $this->headers()
                 );
 
                 if ($project['httpCode'] !== 200) {
-                    $this->output("Failed to remove " . $env['key'] ." env variable.");
+                    $this->output("Failed to remove " . $env->key ." env variable.");
                     $this->output($project['response']);
                 } else {
-                    $this->output("Env " . $env['key'] ." variable deleted.");
+                    $this->output("Env " . $env->key ." variable deleted.");
                 }
 
             }
