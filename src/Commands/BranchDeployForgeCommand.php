@@ -89,9 +89,6 @@ class BranchDeployForgeCommand extends Command
             // Finalize deployment with scripts and environment variables
             $this->updateEnvFile($server, $site);
 
-            // create queue
-            $this->createDaemon($server);
-
             // clean deployment script
             $deployment_script = $site->getDeploymentScript();
             $site->updateDeploymentScript($this->cleanDeploymentScript($deployment_script));
@@ -127,19 +124,6 @@ class BranchDeployForgeCommand extends Command
         }
 
         return Command::SUCCESS;
-    }
-
-    protected function createDaemon(Server $server): Daemon
-    {
-        $this->output('Creating queue');
-
-        $data = [
-            'command' => $this->getPhpVersion().' artisan horizon',
-            'user' => 'forge',
-            'directory' => '/home/forge/'.$this->generateOpsDomain()
-        ];
-
-        return $this->forge->createDaemon($server->id, $data);
     }
 
     protected function createSite(Server $server, string $domain): Site
