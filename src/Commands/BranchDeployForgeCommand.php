@@ -223,6 +223,7 @@ class BranchDeployForgeCommand extends Command
         $this->output('Updating site environment variables');
         $envSource = $this->forge->siteEnvironmentFile($server->id, $site->id);
         $envSource = $this->updateEnvVariable('APP_ENV', $this->getFullEnvName(), $envSource);
+        $envSource = $this->updateEnvVariable('APP_DEBUG', true, $envSource);
         $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
         $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
         $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain(), $envSource);
