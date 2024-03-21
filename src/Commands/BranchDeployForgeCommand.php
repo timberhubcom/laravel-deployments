@@ -113,14 +113,6 @@ class BranchDeployForgeCommand extends Command
                     $this->output('DB deleted');
                 }
             }
-
-            foreach ($this->forge->daemons($server->id) as $daemon) {
-                $directory = '/home/forge/'.$this->generateOpsDomain();
-                if ($daemon->directory === $directory) {
-                    $daemon->delete();
-                    $this->output('daemon deleted');
-                }
-            }
         }
 
         return Command::SUCCESS;
