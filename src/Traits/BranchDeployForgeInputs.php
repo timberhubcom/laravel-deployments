@@ -37,4 +37,16 @@ trait BranchDeployForgeInputs {
     protected function getPhpVersionCode(): string {
         return str_replace('.', '', $this->getPhpVersion());
     }
+
+    protected function getCustomerIoConfig(string $key): string {
+        $configs = [
+            'site_id' => getenv('CUSTOMERIO_SITE_ID'),
+            'api_key' => getenv('CUSTOMERIO_API_KEY'),
+            'app_api_key' => getenv('CUSTOMERIO_APP_API_KEY'),
+            'webhook_url' => getenv('CUSTOMERIO_WEBHOOK_URL'),
+            'webhook_internal_key' => getenv('CUSTOMERIO_WEBHOOK_INTERNAL_KEY'),
+        ];
+
+        return $configs[$key] ?? '';
+    }
 }
