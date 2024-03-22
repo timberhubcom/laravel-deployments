@@ -232,7 +232,9 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('DB_DATABASE', $this->getDatabaseName(), $envSource);
         $envSource = $this->updateEnvVariable('DB_USERNAME', $this->getDatabaseUser(), $envSource);
         $envSource = $this->updateEnvVariable('DB_PASSWORD', $this->getDatabasePassword(), $envSource);
-
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_DATABASE', $this->getDatabaseName(), $envSource);
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_USERNAME', $this->getDatabaseUser(), $envSource);
+        $envSource = $this->updateEnvVariable('SUPABASE_DB_PASSWORD', $this->getDatabasePassword(), $envSource);
         $this->forge->updateSiteEnvironmentFile($server->id, $site->id, $envSource);
         $this->output('Site environment variables updated');
     }
