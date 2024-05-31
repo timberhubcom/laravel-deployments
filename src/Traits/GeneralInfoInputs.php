@@ -15,6 +15,10 @@ trait GeneralInfoInputs {
         return 'th-'.$this->getEnvName();
     }
 
+    protected function getSubdomain(): string {
+        return $this->input->getOption('subdomain');
+    }
+
 
     protected function getDomain(): string {
         return getenv('DEPLOYMENT_DOMAIN') ?? $this->input->getOption('domain');
@@ -37,7 +41,7 @@ trait GeneralInfoInputs {
 
     protected function getFrontendDomain(): string {
         return  implode('.', [
-            'app',
+            $this->getSubdomain(),
             $this->getFullEnvName(),
             $this->getDomain(),
         ]);
