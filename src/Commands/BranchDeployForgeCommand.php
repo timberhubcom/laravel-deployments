@@ -33,6 +33,7 @@ class BranchDeployForgeCommand extends Command
         $this->setDescription('Deploy a branch to the staging server')
             ->addOption('token', 't', InputOption::VALUE_OPTIONAL, 'The Forge API token.')
             ->addOption('server', 's', InputOption::VALUE_OPTIONAL, 'The ID of the target server.')
+            ->addOption('subdomain', 's', InputOption::VALUE_REQUIRED, 'The name of the subdomain you would like to use.', 'app')
             ->addOption('repository', 'r', InputOption::VALUE_REQUIRED, 'The name of the repository being deployed.')
             ->addOption('branch', 'b', InputOption::VALUE_REQUIRED, 'The name of the branch being deployed.')
             ->addOption('env-name', 'e', InputOption::VALUE_REQUIRED, 'The name of the env you would like to use.')
