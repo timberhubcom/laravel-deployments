@@ -39,9 +39,9 @@ trait GeneralInfoInputs {
         ]);
     }
 
-    protected function getFrontendDomain(): string {
+    protected function getFrontendDomain(string $subdomain): string {
         return  implode('.', [
-            $this->getSubdomain(),
+            $subdomain,
             $this->getFullEnvName(),
             $this->getDomain(),
         ]);

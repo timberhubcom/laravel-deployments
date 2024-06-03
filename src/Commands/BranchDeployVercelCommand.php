@@ -19,7 +19,6 @@ class BranchDeployVercelCommand extends Command {
 
     public InputInterface $input;
     public OutputInterface $output;
-    public $BACKEND_KEY = 'NEXT_PUBLIC_BACKEND_URL';
     public $CREATE = 'create';
     public $DELETE = 'delete';
     public $PROJECT_ENDPOINT =  'https://api.vercel.com/v9/projects/';    
@@ -60,7 +59,7 @@ class BranchDeployVercelCommand extends Command {
         }
 
         if ($this->getAction() === $this->CREATE) {
-            $this->addDomainToProject();
+            $this->addDomainToProject($project['response']['framework']);
             $this->addBackendURL();
         }
 
@@ -81,7 +80,7 @@ class BranchDeployVercelCommand extends Command {
 
     protected function addDomainToProject(): void {
         $data = [
-            'name' => $this->getFrontendDomain(),
+            'name' => $this->getFrontendDomain($this->getSubdomain()),
             'gitBranch' => $this->getBranch(),
         ];
 
@@ -97,12 +96,17 @@ class BranchDeployVercelCommand extends Command {
             return;
         }
 
-        $this->output("Domain added to project: https://" . $this->getFrontendDomain());
+        $this->output("Domain added to project: https://" . $this->getFrontendDomain($this->getSubdomain()));
     }
 
-    protected function addBackendURL(): void {
+    protected function addBackendURL($framework): void {
+        $backend_key = 'NEXT_PUBLIC_BACKEND_URL';
+        if ($framework == 'vite') {
+            $backend_key = 'VITE_BACKEND_URL';
+        } 
+        
         $data = [
-            'key' => $this->BACKEND_KEY,
+            'key' => $backend_key,
             'value' => 'https://' . $this->generateOpsDomain(),
             'type' => 'plain',
             'target' => ['preview'],
@@ -126,7 +130,7 @@ class BranchDeployVercelCommand extends Command {
 
      protected function removeDomainURL(): void {
         $project = HTTPRequest::delete(
-            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/domains/' . $this->getFrontendDomain(). '?teamId='. $this->getVercelTeam(),
+            $this->PROJECT_ENDPOINT . $this->getVercelProject(). '/domains/' . $this->getFrontendDomain($this->getSubdomain()). '?teamId='. $this->getVercelTeam(),
             $this->headers()
         );
 
