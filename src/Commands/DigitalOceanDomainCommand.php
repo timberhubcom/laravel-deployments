@@ -25,6 +25,7 @@ class DigitalOceanDomainCommand  extends Command {
         $this->setDescription('Register a redirection domain for Vercel to Digital Ocean')
             ->addOption('token', 't', InputOption::VALUE_REQUIRED, 'The DO API token.')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'The domain you\'d like to use for deployments.')
+            ->addOption('subdomain', 'su', InputOption::VALUE_REQUIRED, 'The name of the app subdomain you would like to use.')
             ->addOption('env-name', 'e', InputOption::VALUE_REQUIRED, 'The name of the env you would like to use.');
     }
 
