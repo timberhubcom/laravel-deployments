@@ -46,6 +46,7 @@ class BranchDeployVercelCommand extends Command {
                 $this->PROJECT_ENDPOINT . $this->getVercelProject(). '?teamId='. $this->getVercelTeam(),
                 $this->headers()
             );
+            $project_object = json_decode($project['response']);
 
             if ($project['httpCode'] !== 200) {
                 $this->output("Failed to find project.");
@@ -59,8 +60,8 @@ class BranchDeployVercelCommand extends Command {
         }
 
         if ($this->getAction() === $this->CREATE) {
-            $this->output($project['response']->framework);
-            $this->addDomainToProject($project['response']['framework']);
+
+            $this->addDomainToProject($project_object->framework);
             $this->addBackendURL();
         }
 
