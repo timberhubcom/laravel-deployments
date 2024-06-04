@@ -59,7 +59,7 @@ class BranchDeployVercelCommand extends Command {
         }
 
         if ($this->getAction() === $this->CREATE) {
-            $this->output($project['response']);
+            $this->output($project['response']->framework);
             $this->addDomainToProject($project['response']['framework']);
             $this->addBackendURL();
         }
