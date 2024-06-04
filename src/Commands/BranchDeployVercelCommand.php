@@ -61,8 +61,8 @@ class BranchDeployVercelCommand extends Command {
 
         if ($this->getAction() === $this->CREATE) {
 
-            $this->addDomainToProject($project_object->framework);
-            $this->addBackendURL();
+            $this->addDomainToProject();
+            $this->addBackendURL($project_object->framework);
         }
 
         if ($this->getAction() === $this->DELETE) { 
