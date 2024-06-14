@@ -203,6 +203,7 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('LOCAL_DEVELOPER', $this->getBranch(), $envSource);
         $envSource = $this->updateEnvVariable('APP_URL', 'https://' . $this->generateOpsDomain(), $envSource);
         $envSource = $this->updateEnvVariable('BP_APP_URL', 'https://' . $this->getFrontendDomain('app'), $envSource);
+        $envSource = $this->updateEnvVariable('IT_APP_URL', 'https://' . $this->getFrontendDomain('it'), $envSource);
         $envSource = $this->updateEnvVariable('SANCTUM_STATEFUL_DOMAINS', $this->getFrontendDomain('app') . ',' . $this->getFrontendDomain('it') . ',' . $this->generateOpsDomain(), $envSource);
         $envSource = $this->updateEnvVariable('SESSION_DOMAIN', '.' . $this->generateSiteDomain(), $envSource);
         $envSource = $this->updateEnvVariable('DB_DATABASE', $this->getDatabaseName(), $envSource);
