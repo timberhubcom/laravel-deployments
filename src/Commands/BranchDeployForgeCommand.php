@@ -209,9 +209,9 @@ class BranchDeployForgeCommand extends Command
         $envSource = $this->updateEnvVariable('DB_DATABASE', $this->getDatabaseName(), $envSource);
         $envSource = $this->updateEnvVariable('DB_USERNAME', $this->getDatabaseUser(), $envSource);
         $envSource = $this->updateEnvVariable('DB_PASSWORD', $this->getDatabasePassword(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_DATABASE', $this->getDatabaseName(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_USERNAME', $this->getDatabaseUser(), $envSource);
-        $envSource = $this->updateEnvVariable('SUPABASE_DB_PASSWORD', $this->getDatabasePassword(), $envSource);
+        $envSource = $this->updateEnvVariable('WAREHOUSE_DB_DATABASE', $this->getDatabaseName(), $envSource);
+        $envSource = $this->updateEnvVariable('WAREHOUSE_DB_USERNAME', $this->getDatabaseUser(), $envSource);
+        $envSource = $this->updateEnvVariable('WAREHOUSE_DB_PASSWORD', $this->getDatabasePassword(), $envSource);
         $envSource = $this->updateEnvVariable('CUSTOMERIO_SITE_ID', $this->getCustomerIoConfig('site_id'), $envSource);
         $envSource = $this->updateEnvVariable('CUSTOMERIO_API_KEY', $this->getCustomerIoConfig('api_key'), $envSource);
         $envSource = $this->updateEnvVariable('CUSTOMERIO_APP_API_KEY', $this->getCustomerIoConfig('app_api_key'), $envSource);
