@@ -39,3 +39,9 @@ Use the following command to deploy your application to a Forge server like this
 Then you can add extra parameters like the environment variables you want to set on the server, or commands that you want to run after the deployment. Those commands could be your own deployment script to finalize the installation of your application.
 
 PS: Make sure your domain name points to the server you are deploying to before you run the command. The deployment URL will look like `https://[BRANCH_NAME].[REPOSITORY_NAME][DOMAIN_NAME].`.
+
+## Create a release 
+```
+git tag -a [version] -m "[title]"
+git push origin tag [version]
+```
